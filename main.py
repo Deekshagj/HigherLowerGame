@@ -1,47 +1,62 @@
-#THIS IS CODE FOR FINDING HIGHER LOWER GAME
-#THE PLAN IS TO GENERATE TWO RANDOM VALUES FROM A LIST AND GIVE IT AS AN OPTION TO THE USER, WHICHEVER OTION FROM THE TWO HAS HIGHER VALUE WILL BE DECIDED BY THE USER AND THE POINT WILL BE ADDED IF GUESSED RIGHT OR THE GAME IS ENDED.
-#here the list is defined with the names,the profession and the followers. The number of followers will be the basis to check who has got higher value.
-#So,when asking the user the options only the name and profession need to displayed and then based on the folowers in the list, the logic will be written to check if the user is right or wrong
-#A count variale will be inialized to keep track of the user points and everytime he guesses right the option with higher value and another randomly generated value will be compared in a loop format
-#start of the code
 import random
-followers = [1000, 2000, 3000, 4000, 500]
-names = ["John", "Peter", "Rahul", "Rohan", "Sabrina"]
-professions = ["Engineer", "Doctor", "Teacher", "Lawyer", "Actor"]
 
+# Data
+people = [
+    {"name": "John", "profession": "Engineer", "followers": 1000},
+    {"name": "Peter", "profession": "Doctor", "followers": 2000},
+    {"name": "Rahul", "profession": "Teacher", "followers": 3000},
+    {"name": "Rohan", "profession": "Lawyer", "followers": 4000},
+    {"name": "Sabrina", "profession": "Actor", "followers": 500},
+]
 
-flag=True
-count=0
-while flag:
-    #randomly select two values from the list
-    option1 = random.choice(followers)
-    option2 = random.choice(followers)
-    #make sure that the two values are not same
-    while option1 == option2:
-        option2 = random.choice(followers)
-    #display the options to the user
-    print("Who do you think has more followers?")
-    print("Option 1: ", names[followers.index(option1)], " ", professions[followers.index(option1)])
-    print("Option 2: ", names[followers.index(option2)], " ", professions[followers.index(option2)])
-        #input the option
-    user_option = input("Enter the option you think has higher followers: ")
-        #check if the user option is correct or not
-    if user_option=='1':
-        if option1>option2:
-            count=count+1
-            print("You got it right, here's your updated score:",count)
-            #loop back
-            flag=True
+def get_random_person(exclude=None):
+    """Returns a random person from the list, excluding the given person."""
+    while True:
+        person = random.choice(people)
+        if person != exclude:
+            return person
+
+def display_options(person1, person2):
+    """Displays the two options to the user."""
+    print("\nWho do you think has more followers?")
+    print(f"Option 1: {person1['name']} ({person1['profession']})")
+    print(f"Option 2: {person2['name']} ({person2['profession']})")
+
+def higher_lower_game():
+    """Main function to run the Higher or Lower game."""
+    score = 0
+    print("Welcome to the Higher or Lower Game!")
+    
+    # Initial two options
+    person1 = get_random_person()
+    person2 = get_random_person(exclude=person1)
+    
+    while True:
+        # Display options
+        display_options(person1, person2)
+        
+        # Get user input
+        user_choice = input("Enter your choice (1 or 2): ").strip()
+        
+        if user_choice not in ['1', '2']:
+            print("Invalid input. Please enter '1' or '2'.")
+            continue
+
+        # Determine if the user's choice is correct
+        chosen_person = person1 if user_choice == '1' else person2
+        other_person = person2 if user_choice == '1' else person1
+
+        if chosen_person["followers"] > other_person["followers"]:
+            score += 1
+            print(f"Correct! {chosen_person['name']} has more followers. Your score: {score}")
+            # Update options: Winner stays, compare with a new person
+            person1 = chosen_person
+            person2 = get_random_person(exclude=person1)
         else:
-            print("You have lost the game! You can always play again.Here's your final score:",count)
-            flag=False
-    elif user_option=='2':
-        if option2>option1:
-            count=count+1
-            print("You got it right, here's your updated score:",count)
-            #loop back
-            flag=True
-        else:
-            print("You have lost the game! You can always play again.Here's your final score:",count)
-            flag=False
+            print(f"Wrong! {chosen_person['name']} has fewer followers than {other_person['name']}.")
+            print(f"Game Over! Your final score: {score}")
+            break
 
+# Start the game
+if __name__ == "__main__":
+    higher_lower_game()
